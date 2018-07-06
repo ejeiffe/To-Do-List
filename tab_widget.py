@@ -23,10 +23,13 @@ class TaskProjectTabs(QWidget):
         self.projects_radio_buttons = RadioButtonWidget(['Active Projects', 'Completed Projects', 'All Projects'])
 
         self.tasks_table = TasksTable()
+        self.populate_tasks_table()
         self.projects_table = ProjectsTable()
+        self.populate_projects_table()
 
         self.tasks_tab_layout.addWidget(self.tasks_radio_buttons)
         self.tasks_tab_layout.addWidget(self.tasks_table)
+        self.tasks_tab.setLayout(self.tasks_tab_layout)
 
         self.projects_tab_layout.addWidget(self.projects_radio_buttons)
         self.projects_tab_layout.addWidget(self.projects_table)
@@ -34,3 +37,17 @@ class TaskProjectTabs(QWidget):
 
         self.tab_widget_layout.addWidget(self.tabs)
         self.setLayout(self.tab_widget_layout)
+
+        self.tasks_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_tasks_table)
+        self.projects_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_projects_table)
+
+    def populate_tasks_table(self):
+        table_type = self.tasks_radio_buttons.selected_button()
+        table_items = self.tasks_table.get_tasks(table_type)
+        self.tasks_table.show_items(table_items)
+        
+    def populate_projects_table(self):
+        table_type = self.projects_radio_buttons.selected_button()
+        table_items = self.projects_table.get_projects(table_type)
+        self.projects_table.show_items(table_items)
+

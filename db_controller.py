@@ -92,35 +92,35 @@ class DbController:
         sql_edit_descr = "UPDATE Projects SET Description = ? WHERE ProjectID = ?"
         self.query(sql_edit_descr, (description, project_id))
 
-    def show_all_tasks(self):
+    def get_all_tasks(self):
         results = self.select_query("SELECT * FROM Tasks")
         return results
 
-    def show_active_tasks(self):
+    def get_active_tasks(self):
         results = self.select_query("SELECT * FROM Tasks WHERE Completed IS NULL")
         return results
 
-    def show_completed_tasks(self):
+    def get_completed_tasks(self):
         results = self.select_query("SELECT * FROM Tasks WHERE Completed IS NOT NULL")
         return results
 
-    def show_all_projects(self):
+    def get_all_projects(self):
         results = self.select_query("SELECT * FROM Projects")
         return results
 
-    def show_active_projects(self):
+    def get_active_projects(self):
         results = self.select_query("SELECT * FROM Projects WHERE Completed IS NULL")
         return results
 
-    def show_completed_projects(self):
+    def get_completed_projects(self):
         results = self.select_query("SELECT * FROM Projects WHERE Completed IS NOT NULL")
         return results
        
-    def show_single_project(self, project_id):
+    def get_single_project(self, project_id):
         results = self.select_query("SELECT * FROM Projects WHERE ProjectID = ?", (project_id,))
         return results
 
-    def show_project_tasks(self, project_id):
+    def get_project_tasks(self, project_id):
         results = self.select_query("SELECT * FROM Tasks WHERE ProjectID = ?", (project_id,))
         return results
 
