@@ -9,6 +9,8 @@ class TableWidget(QTableWidget):
         self.controller = DbController("to_do.db")
 
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.setSelectionBehavior(QTableView.SelectRows)
+        self.setShowGrid(False)
 
     def show_items(self, item_list):
         if len(item_list) == 0:
@@ -21,12 +23,18 @@ class TableWidget(QTableWidget):
                 for item in entry:
                     if item == None:
                         item = ""
-                    elif column == 3:
+                    elif column == 3 or column == 4:
                         item = str(item[:-7])
                     table_item = QTableWidgetItem(str(item))
                     self.setItem(row, column, table_item)
                     column += 1
                 row += 1
+        
+    def check_completed(self):
+        return self.item(self.currentRow(), 4).text() != ""
+
+    def get_id(self):
+        return int(self.item(self.currentRow(), 0).text())
         
 class TasksTable(TableWidget):
 
@@ -44,9 +52,6 @@ class TasksTable(TableWidget):
         else:
             tasks = self.controller.get_all_tasks()
         return tasks
-
-
-
 
 
 class ProjectsTable(TableWidget):

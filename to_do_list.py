@@ -17,6 +17,9 @@ class ToDoWindow(QMainWindow):
         self.central_widget = TaskProjectTabs()
         self.setCentralWidget(self.central_widget)
 
+        self.central_widget.task_exit_button.clicked.connect(self.close)
+        self.central_widget.project_exit_button.clicked.connect(self.close)
+
 if __name__ == "__main__":
     to_do = QApplication(sys.argv)
     main_window = ToDoWindow()
