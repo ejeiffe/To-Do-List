@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from radio_button_widget import *
 from table_widget import *
 from add_new_dialog import *
+from edit_dialog import *
 
 class TaskProjectTabs(QWidget):
 
@@ -29,8 +30,6 @@ class TaskProjectTabs(QWidget):
         self.populate_projects_table()
 
         self.new_task_button = QPushButton("Add New")
-        self.task_project_button = QPushButton("Assign to Project")
-        self.task_project_button.setEnabled(False)
         self.task_complete_button = QPushButton("Mark Completed")
         self.task_complete_button.setEnabled(False)
         self.task_edit_button = QPushButton("Edit")
@@ -52,7 +51,6 @@ class TaskProjectTabs(QWidget):
 
         self.tasks_tab_button_layout = QHBoxLayout()
         self.tasks_tab_button_layout.addWidget(self.new_task_button)
-        self.tasks_tab_button_layout.addWidget(self.task_project_button)
         self.tasks_tab_button_layout.addWidget(self.task_complete_button)
         self.tasks_tab_button_layout.addWidget(self.task_edit_button)
         self.tasks_tab_button_layout.addWidget(self.task_delete_button)
@@ -86,7 +84,9 @@ class TaskProjectTabs(QWidget):
         self.projects_table.clicked.connect(self.enable_project_buttons)
 
         self.new_task_button.clicked.connect(self.open_new_task_dialog)
+        self.task_edit_button.clicked.connect(self.open_edit_task_dialog)
         self.new_project_button.clicked.connect(self.open_new_project_dialog)
+        self.project_edit_button.clicked.connect(self.open_edit_project_dialog)
 
     def populate_tasks_table(self):
         table_type = self.tasks_radio_buttons.selected_button()
@@ -99,7 +99,6 @@ class TaskProjectTabs(QWidget):
         self.projects_table.show_items(table_items)
 
     def enable_task_buttons(self):
-        self.task_project_button.setEnabled(True)
         if not self.tasks_table.check_completed():
             self.task_complete_button.setEnabled(True)
         else:
@@ -124,4 +123,16 @@ class TaskProjectTabs(QWidget):
     def open_new_project_dialog(self):
         new_project_dialog = NewProjectDialog()
         new_project_dialog.exec_()
+        self.populate_projects_table()
+
+    def open_edit_task_dialog(self):
+        task_id = self.tasks_table.get_id()
+        edit_task_dialog = EditTaskDialog(task_id)
+        edit_task_dialog.exec_()
+        self.populate_tasks_table()
+
+    def open_edit_project_dialog(self):
+        project_id = self.projects_table.get_id()
+        edit_project_dialog = EditProjectDialog(project_id)
+        edit_project_dialog.exec_()
         self.populate_projects_table()

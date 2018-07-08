@@ -85,7 +85,7 @@ class DbController:
         self.query(sql_assign_task, (project_id, task_id))
 
     def set_project_deadline(self, project_id, deadline):
-        sql_set_deadline = "UPDATE Project SET Deadline = ? WHERE ProjectID = ?"
+        sql_set_deadline = "UPDATE Projects SET Deadline = ? WHERE ProjectID = ?"
         self.query(sql_set_deadline, (deadline, project_id))
 
     def edit_project_description(self, project_id, description):
@@ -102,6 +102,10 @@ class DbController:
 
     def get_completed_tasks(self):
         results = self.select_query("SELECT * FROM Tasks WHERE Completed IS NOT NULL")
+        return results
+
+    def get_single_task(self, task_id):
+        results = self.select_query("SELECT * FROM Tasks WHERE TaskID = ?", (task_id,))
         return results
 
     def get_all_projects(self):
