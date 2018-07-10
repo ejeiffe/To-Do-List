@@ -53,6 +53,8 @@ class TasksTable(TableWidget):
             tasks = self.controller.get_all_tasks()
         return tasks
 
+    def get_task_project_id(self):
+        return int(self.item(self.currentRow(), 5).text())
 
 class ProjectsTable(TableWidget):
 

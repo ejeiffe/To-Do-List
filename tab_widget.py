@@ -1,14 +1,17 @@
 from PyQt5.QtWidgets import *
 
+from db_controller import *
 from radio_button_widget import *
 from table_widget import *
 from add_new_dialog import *
+from mark_complete_dialog import *
 from edit_dialog import *
 
 class TaskProjectTabs(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.controller = DbController("to_do.db")
         self.tab_widget_layout = QVBoxLayout()
 
         self.tabs = QTabWidget()
@@ -84,8 +87,12 @@ class TaskProjectTabs(QWidget):
         self.projects_table.clicked.connect(self.enable_project_buttons)
 
         self.new_task_button.clicked.connect(self.open_new_task_dialog)
-        self.task_edit_button.clicked.connect(self.open_edit_task_dialog)
         self.new_project_button.clicked.connect(self.open_new_project_dialog)
+        
+        self.task_complete_button.clicked.connect(self.mark_task_completed)
+        self.project_complete_button.clicked.connect(self.mark_project_completed)
+
+        self.task_edit_button.clicked.connect(self.open_edit_task_dialog)
         self.project_edit_button.clicked.connect(self.open_edit_project_dialog)
 
     def populate_tasks_table(self):
@@ -136,3 +143,35 @@ class TaskProjectTabs(QWidget):
         edit_project_dialog = EditProjectDialog(project_id)
         edit_project_dialog.exec_()
         self.populate_projects_table()
+
+    def mark_task_completed(self):
+        task_id = self.tasks_table.get_id()
+        self.controller.mark_task_completed(task_id)
+        project_id = self.check_project_tasks_completed()
+        if project_id:
+            mark_project_complete_dialog = MarkProjectCompleteDialog(project_id)
+            mark_project_complete_dialog.exec_()
+        self.populate_tasks_table()
+        self.populate_projects_table()
+
+    def check_project_tasks_completed(self):
+        project_id = self.tasks_table.get_task_project_id()
+        if self.controller.check_project_completed(project_id):
+            return project_id
+        else:
+            return False
+
+    def mark_project_completed(self):
+        project_id = self.projects_table.get_id()
+        self.controller.mark_project_completed(project_id)
+        if not self.check_project_tasks_completed():
+            mark_project_tasks_complete_dialog = MarkProjectTasksCompleteDialog(project_id)
+            mark_project_tasks_complete_dialog.exec_()
+        self.populate_projects_table()
+        self.populate_tasks_table()
+
+
+
+
+
+
