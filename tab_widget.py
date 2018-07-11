@@ -6,13 +6,13 @@ from table_widget import *
 from add_new_dialog import *
 from mark_complete_dialog import *
 from edit_dialog import *
+from delete_dialog import *
 
 class TaskProjectTabs(QWidget):
 
     def __init__(self):
         super().__init__()
         self.controller = DbController("to_do.db")
-        self.tab_widget_layout = QVBoxLayout()
 
         self.tabs = QTabWidget()
         self.tasks_tab = QWidget()
@@ -77,8 +77,11 @@ class TaskProjectTabs(QWidget):
         self.projects_tab_layout.addLayout(self.projects_tab_button_layout)
         self.projects_tab.setLayout(self.projects_tab_layout)
 
+        self.tab_widget_layout = QVBoxLayout()
         self.tab_widget_layout.addWidget(self.tabs)
         self.setLayout(self.tab_widget_layout)
+
+        self.tabs.currentChanged.connect(self.refresh_tab)
 
         self.tasks_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_tasks_table)
         self.projects_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_projects_table)
@@ -95,6 +98,9 @@ class TaskProjectTabs(QWidget):
         self.task_edit_button.clicked.connect(self.open_edit_task_dialog)
         self.project_edit_button.clicked.connect(self.open_edit_project_dialog)
 
+        self.task_delete_button.clicked.connect(self.open_delete_task_dialog)
+        self.project_delete_button.clicked.connect(self.open_delete_project_dialog)
+
     def populate_tasks_table(self):
         table_type = self.tasks_radio_buttons.selected_button()
         table_items = self.tasks_table.get_tasks(table_type)
@@ -104,6 +110,12 @@ class TaskProjectTabs(QWidget):
         table_type = self.projects_radio_buttons.selected_button()
         table_items = self.projects_table.get_projects(table_type)
         self.projects_table.show_items(table_items)
+
+    def refresh_tab(self):
+        if self.tabs.currentIndex() == 0:
+            self.populate_tasks_table()
+        else:
+            self.populate_projects_table()
 
     def enable_task_buttons(self):
         if not self.tasks_table.check_completed():
@@ -152,7 +164,6 @@ class TaskProjectTabs(QWidget):
             mark_project_complete_dialog = MarkProjectCompleteDialog(project_id)
             mark_project_complete_dialog.exec_()
         self.populate_tasks_table()
-        self.populate_projects_table()
 
     def check_project_tasks_completed(self):
         project_id = self.tasks_table.get_task_project_id()
@@ -168,7 +179,19 @@ class TaskProjectTabs(QWidget):
             mark_project_tasks_complete_dialog = MarkProjectTasksCompleteDialog(project_id)
             mark_project_tasks_complete_dialog.exec_()
         self.populate_projects_table()
+
+    def open_delete_task_dialog(self):
+        task_id = self.tasks_table.get_id()
+        delete_task_dialog = DeleteTaskDialog(task_id)
+        delete_task_dialog.exec_()
         self.populate_tasks_table()
+
+    def open_delete_project_dialog(self):
+        project_id = self.projects_table.get_id()
+        delete_project_dialog = DeleteProjectDialog(project_id)
+        delete_project_dialog.exec_()
+        self.populate_projects_table()
+
 
 
 

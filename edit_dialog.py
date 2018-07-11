@@ -15,12 +15,15 @@ class EditDialog(QDialog):
         self.description_line_edit = QLineEdit()
         self.deadline_label = QLabel("Deadline: ")
         self.deadline_calendar_widget = QCalendarWidget()
+        self.deadline_calendar_widget.setMinimumDate(datetime.today())
+        self.no_deadline_checkbox = QCheckBox("No deadline")
 
         self.description_deadline_layout = QVBoxLayout()
         self.description_deadline_layout.addWidget(self.description_label)
         self.description_deadline_layout.addWidget(self.description_line_edit)
         self.description_deadline_layout.addWidget(self.deadline_label)
         self.description_deadline_layout.addWidget(self.deadline_calendar_widget)
+        self.description_deadline_layout.addWidget(self.no_deadline_checkbox)
 
         self.save_edit_button = QPushButton("Save")
         self.save_edit_button.setEnabled(False)
@@ -32,10 +35,18 @@ class EditDialog(QDialog):
 
         self.description_line_edit.textEdited.connect(self.enable_save_button)
         self.deadline_calendar_widget.clicked.connect(self.enable_save_button)
+        self.no_deadline_checkbox.clicked.connect(self.toggle_calendar)
+        self.no_deadline_checkbox.clicked.connect(self.enable_save_button)
         self.cancel_edit_button.clicked.connect(self.close)
 
     def enable_save_button(self):
         self.save_edit_button.setEnabled(True)
+
+    def toggle_calendar(self):
+        if self.no_deadline_checkbox.isChecked():
+            self.deadline_calendar_widget.setEnabled(False)
+        else:
+            self.deadline_calendar_widget.setEnabled(True)
 
 
 class EditTaskDialog(EditDialog):
@@ -49,7 +60,11 @@ class EditTaskDialog(EditDialog):
         self.task_details = self.get_task_details()
 
         self.description_line_edit.setText(self.task_details[0][1])
-        self.deadline_calendar_widget.setSelectedDate(QDate.fromString(self.task_details[0][2], "yyyy-MM-dd"))
+        if self.task_details[0][2] == None:
+            self.no_deadline_checkbox.setChecked(True)
+            self.deadline_calendar_widget.setEnabled(False)
+        else: 
+            self.deadline_calendar_widget.setSelectedDate(QDate.fromString(self.task_details[0][2], "yyyy-MM-dd"))
 
         self.project_assign_label = QLabel("Assign to Project")
         self.project_assign_combobox = QComboBox()
@@ -61,7 +76,6 @@ class EditTaskDialog(EditDialog):
             if int(project[0]) == self.task_details[0][5]:
                 self.current_index = project_list.index(project) + 1
         self.project_assign_combobox.setCurrentIndex(self.current_index)
-
 
         self.project_assign_layout = QVBoxLayout()
         self.project_assign_layout.addWidget(self.project_assign_label)
@@ -92,7 +106,10 @@ class EditTaskDialog(EditDialog):
             description = self.description_line_edit.text()
             self.controller.edit_task_description(self.task_id, description)
         if self.deadline_calendar_widget.selectionChanged:
-            deadline = self.deadline_calendar_widget.selectedDate().toPyDate()
+            if self.no_deadline_checkbox.isChecked():
+                deadline = None
+            else:
+                deadline = self.deadline_calendar_widget.selectedDate().toPyDate()
             self.controller.set_task_deadline(self.task_id, deadline)
         if self.project_assign_combobox.currentIndex() != self.current_index:        
             if self.project_assign_combobox.currentText() == "None":
@@ -113,7 +130,11 @@ class EditProjectDialog(EditDialog):
         self.project_details = self.get_project_details()
 
         self.description_line_edit.setText(self.project_details[0][1])
-        self.deadline_calendar_widget.setSelectedDate(QDate.fromString(self.project_details[0][2], "yyyy-MM-dd"))
+        if self.project_details[0][2] == None:
+            self.no_deadline_checkbox.setChecked(True)
+            self.deadline_calendar_widget.setEnabled(False)
+        else:
+            self.deadline_calendar_widget.setSelectedDate(QDate.fromString(self.project_details[0][2], "yyyy-MM-dd"))
         
         self.edit_project_layout = QVBoxLayout()
         self.edit_project_layout.addLayout(self.description_deadline_layout)
@@ -132,7 +153,10 @@ class EditProjectDialog(EditDialog):
             description = self.description_line_edit.text()
             self.controller.edit_project_description(self.project_id, description)
         if self.deadline_calendar_widget.selectionChanged:
-            deadline = self.deadline_calendar_widget.selectedDate().toPyDate()
+            if self.no_deadline_checkbox.isChecked():
+                deadline = None
+            else:
+                deadline = self.deadline_calendar_widget.selectedDate().toPyDate()
             self.controller.set_project_deadline(self.project_id, deadline)
         self.close()
 

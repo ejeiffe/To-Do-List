@@ -65,7 +65,7 @@ class DbController:
         results = self.select_query(sql_get_project_id, (task_id,))
         return results[0][0]
 
-    def check_project_completed(self, project_id):
+    def check_project_tasks_completed(self, project_id):
         sql_check_project = "SELECT TaskID FROM Tasks WHERE ProjectID = ? AND Completed IS NULL"
         results = self.select_query(sql_check_project, (project_id,))
         if not results:
@@ -127,6 +127,8 @@ class DbController:
     def get_project_tasks(self, project_id):
         results = self.select_query("SELECT * FROM Tasks WHERE ProjectID = ?", (project_id,))
         return results
+
+
 
 
 

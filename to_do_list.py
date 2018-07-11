@@ -13,6 +13,7 @@ class ToDoWindow(QMainWindow):
         super().__init__()
         
         self.setWindowTitle("To Do List")
+        self.setMinimumHeight(300)
 
         self.central_widget = TaskProjectTabs()
         self.setCentralWidget(self.central_widget)
