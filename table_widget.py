@@ -1,6 +1,10 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+
+from datetime import datetime
 
 from db_controller import *
+
 
 class TableWidget(QTableWidget):
 
@@ -26,6 +30,9 @@ class TableWidget(QTableWidget):
                     elif column == 3 or column == 4:
                         item = str(item[:-7])
                     table_item = QTableWidgetItem(str(item))
+                    if column == 2 and item != "":
+                        if self.check_overdue(item):
+                            table_item.setForeground(QColor(255,0,0))
                     self.setItem(row, column, table_item)
                     column += 1
                 row += 1
@@ -35,6 +42,12 @@ class TableWidget(QTableWidget):
 
     def get_id(self):
         return int(self.item(self.currentRow(), 0).text())
+
+    def check_overdue(self, deadline):
+        deadline_date = datetime.strptime(deadline, '%Y-%m-%d')
+        if deadline_date <= datetime.today():
+            return True
+        return False
         
 class TasksTable(TableWidget):
 

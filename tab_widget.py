@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 from db_controller import *
 from radio_button_widget import *
@@ -21,12 +22,29 @@ class TaskProjectTabs(QWidget):
 
         self.tabs.addTab(self.tasks_tab, "Tasks")
         self.tabs.addTab(self.projects_tab, "Projects")
-
-        self.tasks_tab_layout = QVBoxLayout()
-        self.projects_tab_layout = QVBoxLayout()
-
+             
         self.tasks_radio_buttons = RadioButtonWidget(['Active Tasks', 'Completed Tasks', 'All Tasks'])
         self.projects_radio_buttons = RadioButtonWidget(['Active Projects', 'Completed Projects', 'All Projects'])
+
+        self.tasks_sort_label = QLabel("Sort by:")
+        self.tasks_sort_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.tasks_sort_combobox = QComboBox()
+        self.tasks_sort_combobox.addItems(["TaskID", "Decription", "Deadline", "Created", "Completed", "ProjectID"])
+
+        self.projects_sort_label = QLabel("Sort by:")
+        self.projects_sort_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.projects_sort_combobox = QComboBox()
+        self.projects_sort_combobox.addItems(["ProjectID", "Decription", "Deadline", "Created", "Completed"])
+
+        self.tasks_top_layout = QHBoxLayout()
+        self.tasks_top_layout.addWidget(self.tasks_radio_buttons)
+        self.tasks_top_layout.addWidget(self.tasks_sort_label)
+        self.tasks_top_layout.addWidget(self.tasks_sort_combobox)
+
+        self.projects_top_layout = QHBoxLayout()
+        self.projects_top_layout.addWidget(self.projects_radio_buttons)
+        self.projects_top_layout.addWidget(self.projects_sort_label)
+        self.projects_top_layout.addWidget(self.projects_sort_combobox)
 
         self.tasks_table = TasksTable()
         self.populate_tasks_table()
@@ -68,12 +86,14 @@ class TaskProjectTabs(QWidget):
         self.projects_tab_button_layout.addWidget(self.project_delete_button)
         self.projects_tab_button_layout.addWidget(self.project_exit_button)
 
-        self.tasks_tab_layout.addWidget(self.tasks_radio_buttons)
+        self.tasks_tab_layout = QVBoxLayout()
+        self.tasks_tab_layout.addLayout(self.tasks_top_layout)
         self.tasks_tab_layout.addWidget(self.tasks_table)
         self.tasks_tab_layout.addLayout(self.tasks_tab_button_layout)
         self.tasks_tab.setLayout(self.tasks_tab_layout)
 
-        self.projects_tab_layout.addWidget(self.projects_radio_buttons)
+        self.projects_tab_layout = QVBoxLayout()
+        self.projects_tab_layout.addLayout(self.projects_top_layout)
         self.projects_tab_layout.addWidget(self.projects_table)
         self.projects_tab_layout.addLayout(self.projects_tab_button_layout)
         self.projects_tab.setLayout(self.projects_tab_layout)
@@ -86,6 +106,9 @@ class TaskProjectTabs(QWidget):
 
         self.tasks_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_tasks_table)
         self.projects_radio_buttons.radio_button_group.buttonClicked.connect(self.populate_projects_table)
+
+        self.tasks_sort_combobox.currentIndexChanged.connect(self.sort_tasks_table)
+        self.projects_sort_combobox.currentIndexChanged.connect(self.sort_projects_table)
 
         self.tasks_table.clicked.connect(self.enable_task_buttons)
         self.projects_table.clicked.connect(self.enable_project_buttons)
@@ -119,6 +142,14 @@ class TaskProjectTabs(QWidget):
             self.populate_tasks_table()
         else:
             self.populate_projects_table()
+
+    def sort_tasks_table(self):
+        sort_by = self.tasks_sort_combobox.currentIndex()
+        self.tasks_table.sortByColumn(sort_by, Qt.AscendingOrder)
+
+    def sort_projects_table(self):
+        sort_by = self.projects_sort_combobox.currentIndex()
+        self.projects_table.sortByColumn(sort_by, Qt.AscendingOrder)
 
     def enable_task_buttons(self):
         if not self.tasks_table.check_completed():
