@@ -56,6 +56,16 @@ class TasksTable(TableWidget):
     def get_task_project_id(self):
         return int(self.item(self.currentRow(), 5).text())
 
+class ProjectTasksTable(TasksTable):
+
+    def __init__(self, project_id):
+        super().__init__()
+        self.project_id = project_id
+
+    def get_project_tasks(self):
+        return self.controller.get_project_tasks(self.project_id)
+
+
 class ProjectsTable(TableWidget):
 
     def __init__(self):

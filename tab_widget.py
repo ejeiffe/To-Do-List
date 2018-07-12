@@ -7,6 +7,7 @@ from add_new_dialog import *
 from mark_complete_dialog import *
 from edit_dialog import *
 from delete_dialog import *
+from project_tasks_dialog import *
 
 class TaskProjectTabs(QWidget):
 
@@ -92,6 +93,8 @@ class TaskProjectTabs(QWidget):
         self.new_task_button.clicked.connect(self.open_new_task_dialog)
         self.new_project_button.clicked.connect(self.open_new_project_dialog)
         
+        self.project_tasks_button.clicked.connect(self.open_project_tasks_dialog)
+
         self.task_complete_button.clicked.connect(self.mark_task_completed)
         self.project_complete_button.clicked.connect(self.mark_project_completed)
 
@@ -167,7 +170,7 @@ class TaskProjectTabs(QWidget):
 
     def check_project_tasks_completed(self):
         project_id = self.tasks_table.get_task_project_id()
-        if self.controller.check_project_completed(project_id):
+        if self.controller.check_project_tasks_completed(project_id):
             return project_id
         else:
             return False
@@ -190,6 +193,12 @@ class TaskProjectTabs(QWidget):
         project_id = self.projects_table.get_id()
         delete_project_dialog = DeleteProjectDialog(project_id)
         delete_project_dialog.exec_()
+        self.populate_projects_table()
+
+    def open_project_tasks_dialog(self):
+        project_id = self.projects_table.get_id()
+        project_tasks_dialog = ProjectTasksDialog(project_id)
+        project_tasks_dialog.exec_()
         self.populate_projects_table()
 
 

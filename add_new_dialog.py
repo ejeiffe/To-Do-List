@@ -91,6 +91,24 @@ class NewTaskDialog(AddNewDialog):
         self.controller.add_task(description, deadline, project_id)
         self.close()
 
+class NewProjectTaskDialog(NewTaskDialog):
+
+    def __init__(self, project_id):
+        super().__init__()
+        self.project_id = project_id
+
+        self.project_assign_label.hide()
+        self.project_assign_combobox.hide()
+
+    def add_new_task(self):
+        description = self.description_line_edit.text()
+        if self.no_deadline_checkbox.isChecked():
+            deadline = None
+        else:
+            deadline = self.deadline_calendar_widget.selectedDate().toPyDate()
+        self.controller.add_task(description, deadline, self.project_id)
+        self.close()
+
 class NewProjectDialog(AddNewDialog):
 
     def __init__(self):
