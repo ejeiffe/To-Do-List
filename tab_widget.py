@@ -201,10 +201,11 @@ class TaskProjectTabs(QWidget):
 
     def check_project_tasks_completed(self):
         project_id = self.tasks_table.get_task_project_id()
-        if self.controller.check_project_tasks_completed(project_id):
-            return project_id
-        else:
-            return False
+        if project_id:
+            if self.controller.check_project_tasks_completed(project_id):
+                return project_id
+            else:
+                return False
 
     def mark_project_completed(self):
         project_id = self.projects_table.get_id()

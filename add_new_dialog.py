@@ -56,8 +56,7 @@ class NewTaskDialog(AddNewDialog):
         self.project_assign_label = QLabel("Assign to Project")
         self.project_assign_combobox = QComboBox()
         self.project_assign_combobox.addItem("None")
-        for project in self.get_project_list():
-            self.project_assign_combobox.addItem(project)
+        self.project_assign_combobox.addItems(self.get_project_list())
 
         self.project_assign_layout = QVBoxLayout()
         self.project_assign_layout.addWidget(self.project_assign_label)

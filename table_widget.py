@@ -22,6 +22,10 @@ class TableWidget(QTableWidget):
         else:
             row = 0
             for entry in item_list:
+                if entry[4] == None:
+                    active = True
+                else:
+                    active = False
                 self.setRowCount(row+1)
                 column = 0
                 for item in entry:
@@ -30,7 +34,7 @@ class TableWidget(QTableWidget):
                     elif column == 3 or column == 4:
                         item = str(item[:-7])
                     table_item = QTableWidgetItem(str(item))
-                    if column == 2 and item != "":
+                    if column == 2 and item != "" and active:
                         if self.check_overdue(item):
                             table_item.setForeground(QColor(255,0,0))
                     self.setItem(row, column, table_item)
@@ -67,7 +71,10 @@ class TasksTable(TableWidget):
         return tasks
 
     def get_task_project_id(self):
-        return int(self.item(self.currentRow(), 5).text())
+        project_id = self.item(self.currentRow(), 5).text()
+        if project_id != "":
+            return int(self.item(self.currentRow(), 5).text())
+        return False
 
 class ProjectTasksTable(TasksTable):
 
